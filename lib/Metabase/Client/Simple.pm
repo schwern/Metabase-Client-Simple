@@ -65,14 +65,31 @@ sub _check_is_protocol_supported {
 
     my $scheme = URI->new( $self->uri )->scheme;
     unless ( $self->_ua->is_protocol_supported( $scheme ) ) {
-        my $msg = "Scheme '$scheme' is not supported by your LWP::UserAgent.\n";
-        if ( $scheme eq 'https' ) {
-            $msg .= "You must install Crypt::SSLeay or IO::Socket::SSL or use http instead.\n";
-        }
+        my $msg = $self->_error_message_for_scheme($scheme);
         die $msg;
     }
 
     return;
+}
+
+
+sub _error_message_for_scheme {
+    my $self = shift;
+    my $scheme = shift;
+
+    my $msg = "Scheme '$scheme' is not supported by your LWP::UserAgent.\n";
+
+    if ( $scheme eq 'https' ) {
+        # LWP unbundled LWP::Protocol::https in 6.02 to make installing https support easier.
+        if( $LWP::VERSION >= 6.02 ) {
+            $msg .= "You must install LWP::Protocol::https or use http instead.\n";
+        }
+        else {
+            $msg .= "You must install Crypt::SSLeay or IO::Socket::SSL or use http instead.\n";
+        }
+    }
+
+    return $msg;
 }
 
 
