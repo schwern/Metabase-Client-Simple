@@ -15,7 +15,7 @@ use JSON 2 ();
 use Metabase::User::Profile ();
 use Metabase::User::Secret ();
 
-use Test::More 0.88; END { done_testing }
+use Test::More 0.88;
 
 require_ok('Metabase::Client::Simple');
 
@@ -59,3 +59,6 @@ eval { Metabase::Client::Simple->new( $args ) };
 like( $@, qr/Scheme 'fake' is not supported by your LWP::UserAgent/,
   "Bad scheme causes new() to die"
 );
+
+
+done_testing;
