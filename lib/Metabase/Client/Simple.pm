@@ -54,17 +54,27 @@ sub new {
     Carp::confess( "'profile' argument for $class must be a Metabase::User::secret" );
   }
 
-  my $scheme = URI->new( $self->uri )->scheme;
-  unless ( $self->_ua->is_protocol_supported( $scheme ) ) {
-    my $msg = "Scheme '$scheme' is not supported by your LWP::UserAgent.\n";
-    if ( $scheme eq 'https' ) {
-      $msg .= "You must install Crypt::SSLeay or IO::Socket::SSL or use http instead.\n";
-    }
-    die $msg;
-  }
+  $self->_check_is_protocol_supported;
 
   return $self;
 }
+
+
+sub _check_is_protocol_supported {
+    my $self = shift;
+
+    my $scheme = URI->new( $self->uri )->scheme;
+    unless ( $self->_ua->is_protocol_supported( $scheme ) ) {
+        my $msg = "Scheme '$scheme' is not supported by your LWP::UserAgent.\n";
+        if ( $scheme eq 'https' ) {
+            $msg .= "You must install Crypt::SSLeay or IO::Socket::SSL or use http instead.\n";
+        }
+        die $msg;
+    }
+
+    return;
+}
+
 
 sub _ua {
   my ($self) = @_;
